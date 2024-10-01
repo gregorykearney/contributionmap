@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2487.7">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; -webkit-text-stroke: #000000}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; -webkit-text-stroke: #000000; min-height: 14.0px}
+    span.s1 {font-kerning: none}
+  </style>
+</head>
+<body>
+<p class="p1"><span class="s1">&lt;!DOCTYPE html&gt;</span></p>
+<p class="p1"><span class="s1">&lt;html lang="en"&gt;</span></p>
+<p class="p1"><span class="s1">&lt;head&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;title&gt;US Contributions Map&lt;/title&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" /&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;style&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>#map { height: 600px; width: 100%; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.info {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 6px 8px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font: 14px/16px Arial, Helvetica, sans-serif;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background: white;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background: rgba(255,255,255,0.8);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>box-shadow: 0 0 15px rgba(0,0,0,0.2);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 5px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/head&gt;</span></p>
+<p class="p1"><span class="s1">&lt;body&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div id="map"&gt;&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script src="https://unpkg.com/leaflet/dist/leaflet.js"&gt;&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Initialize the map</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>var map = L.map('map').setView([37.8, -96], 4); // Centered on the US</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Tile layer (base map)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>attribution: '&amp;copy; OpenStreetMap contributors'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}).addTo(map);</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Load external GeoJSON file</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>fetch('us-state-boundaries.geojson') // Use the path to your GeoJSON file</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>.then(response =&gt; response.json())</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>.then(statesData =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Define the color scheme based on your metric (weighted/unweighted)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>function getColor(d) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>return d &gt; 15 ? '#800026' :</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                           </span>d &gt; 10 ? '#BD0026' :</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                           </span>d &gt; 7<span class="Apple-converted-space">  </span>? '#E31A1C' :</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                           </span>d &gt; 5<span class="Apple-converted-space">  </span>? '#FC4E2A' :</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                           </span>d &gt; 3<span class="Apple-converted-space">  </span>? '#FD8D3C' :</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                           </span>d &gt; 1<span class="Apple-converted-space">  </span>? '#FEB24C' :</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>'#FFEDA0';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Style function</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>function style(feature) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>return {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>fillColor: getColor(feature.properties.weighted_mean), // Color based on weighted mean</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>weight: 2,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>opacity: 1,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>color: 'white',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>dashArray: '3',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>fillOpacity: 0.7</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>};</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Add GeoJSON layer to the map</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>L.geoJson(statesData, {style: style}).addTo(map);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>});</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/body&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/html&gt;</span></p>
+</body>
+</html>
